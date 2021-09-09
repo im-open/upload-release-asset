@@ -43,7 +43,7 @@ jobs:
           calculate-prerelease-version: true
           branch-name: ${{ github.head_ref }}
 
-      - name: Create Pre-release
+      - name: Create release
         id: create_release
         uses: im-open/create-release@v1.0.0
         with:
@@ -100,7 +100,6 @@ This project has adopted the [im-open's Code of Conduct](https://github.com/im-o
 
 Copyright &copy; 2021, Extend Health, LLC. Code released under the [MIT license](LICENSE).
 
-[create-release]: https://github.com/actions/create-release
 [upload-release-asset]: https://github.com/actions/upload-release-asset
 [im-open/create-release]: https://github.com/im-open/create-release
 [api call]: https://docs.github.com/en/rest/reference/repos#create-a-release
