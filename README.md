@@ -43,13 +43,13 @@ jobs:
       upload_url: ${{ steps.create_release.outputs.asset-upload-url }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with: 
           fetch-depth: 0
 
       - name: Calculate next version
         id: version
-        uses: im-open/git-version-lite@v2.0.6
+        uses: im-open/git-version-lite@v2.1.0
         with:
           calculate-prerelease-version: true
           branch-name: ${{ github.head_ref }}
