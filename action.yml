@@ -11,7 +11,7 @@ inputs:
     required: true
   asset-path:
     description: 'The path to the asset you want to upload.'
-    required: false
+    required: true
   asset-name:
     description: 'The name of the asset you want to upload.'
     required: true
