@@ -49,14 +49,14 @@ jobs:
 
       - name: Calculate next version
         id: version
-        uses: im-open/git-version-lite@v2.1.1
+        uses: im-open/git-version-lite@v2.1.2
         with:
           calculate-prerelease-version: true
           branch-name: ${{ github.head_ref }}
 
       - name: Create release
         id: create_release
-        uses: im-open/create-release@v3.1.0
+        uses: im-open/create-release@v3.1.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           tag-name: ${{ steps.version.outputs.VERSION }}
@@ -77,7 +77,7 @@ jobs:
         ...
       
       - name: Upload published artifact
-        uses: im-open/upload-release-asset@v1.1.0
+        uses: im-open/upload-release-asset@v1.1.1
         with: 
           github-token: ${{ secrets.GITHUB_TOKEN }}
           upload-url: ${{ needs.create-release.outputs.upload_url }}
