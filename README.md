@@ -78,7 +78,7 @@ jobs:
         ...
       
       - name: Upload published artifact
-        uses: im-open/upload-release-asset@v1.1.2
+        uses: im-open/upload-release-asset@v1.1.3
         with: 
           github-token: ${{ secrets.GITHUB_TOKEN }}
           upload-url: ${{ needs.create-release.outputs.upload_url }}
