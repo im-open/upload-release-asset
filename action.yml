@@ -1,6 +1,6 @@
-name: 'upload-release-asset'
+name: upload-release-asset
+description: Upload a release asset
 
-description: 'Upload a release asset'
 author: 'GitHub'
 inputs:
   github-token:
