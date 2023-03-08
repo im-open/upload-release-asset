@@ -49,13 +49,14 @@ jobs:
 
       - name: Calculate next version
         id: version
-        uses: im-open/git-version-lite@v2.1.2
+        uses: im-open/git-version-lite@v2
         with:
           calculate-prerelease-version: true
           branch-name: ${{ github.head_ref }}
 
       - name: Create release
         id: create_release
+        # TW-64305: Create Major version tag on merge
         uses: im-open/create-release@v3.1.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
