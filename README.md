@@ -56,7 +56,7 @@ jobs:
 
       - name: Create release
         id: create_release
-        # TW-64305: Create Major version tag on merge
+        # You may also reference just the major or major.minor version
         uses: im-open/create-release@v3.1.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
