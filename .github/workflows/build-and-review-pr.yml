@@ -101,7 +101,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           upload-url: ${{ steps.release.outputs.asset-upload-url }}
-          asset-path: './test/test-asset.txt'
+          asset-path: './test/files/test-asset.txt'
           asset-name: ${{ env.ASSET_NAME }}
           asset-content-type: 'application/text'
 
@@ -127,9 +127,6 @@ jobs:
       #----------------------------------------
       # UPLOAD TO A RELEASE THAT DOES NOT EXIST
       #----------------------------------------
-      - name: '-------------------------------------------------------------------------------------------------------'
-        run: echo ""
-
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
       - name: When uploading an asset to a release that does not exist
