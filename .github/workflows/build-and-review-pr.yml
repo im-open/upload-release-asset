@@ -73,9 +73,16 @@ jobs:
       #--------------------------------------
       # SETUP
       #--------------------------------------
+      - name: Fail test job if fork
+        run: |
+          if [ "${{ github.event.pull_request.head.repo.fork }}" == "true" ]; then
+            echo "This test job requires write scopes on GITHUB_TOKEN that PRs from forks will not have access to.  Before this PR can be merged, the tests should be run on an intermediate branch created by repository owners."
+            exit 1
+          fi
+
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
-      
+
       - name: Setup - Checkout the action
         uses: actions/checkout@v3
 
@@ -97,7 +104,7 @@ jobs:
       #--------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
-      
+
       - name: When uploading an asset to a release that exists
         uses: ./
         if: always()
@@ -133,7 +140,7 @@ jobs:
       #----------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
-      
+
       - name: When uploading an asset to a release that does not exist
         uses: ./
         if: always()
@@ -159,7 +166,7 @@ jobs:
       #--------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
-      
+
       - name: Teardown - Cleanup all the releases by deleting them
         if: always()
         uses: actions/github-script@v6
