@@ -60,3 +60,126 @@ jobs:
       # The npm script to run to build the action.  This is typically 'npm run build' if the
       # action needs to be compiled.  For composite-run-steps actions this is typically empty.
       build-command: 'npm run build'
+
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      COMMITISH: '77564a921ca7aa4028d563cc14799df040ed4133' # v1.1.3
+      UPLOAD_TAG: ''
+      ASSET_NAME: 'test asset'
+
+    steps:
+      #--------------------------------------
+      # SETUP
+      #--------------------------------------
+      - name: Fail test job if fork
+        run: |
+          if [ "${{ github.event.pull_request.head.repo.fork }}" == "true" ]; then
+            echo "This test job requires write scopes on GITHUB_TOKEN that PRs from forks will not have access to.  Before this PR can be merged, the tests should be run on an intermediate branch created by repository owners."
+            exit 1
+          fi
+
+      - name: '-------------------------------------------------------------------------------------------------------'
+        run: echo ""
+
+      - name: Setup - Checkout the action
+        uses: actions/checkout@v3
+
+      - name: Setup - Dynamically generate tags for each of the scenarios to use with their release
+        run: |
+          tag=$(date +'%Y%m%d%H%M%S')
+          echo "UPLOAD_TAG=uploadTest_$tag" >> $GITHUB_ENV
+
+      - name: Setup - Create a release
+        uses: im-open/create-release@v3
+        id: release
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          tag-name: ${{ env.UPLOAD_TAG }}
+          commitish: ${{ env.COMMITISH }}
+
+      #--------------------------------------
+      # UPLOAD TO EXISTING RELEASE
+      #--------------------------------------
+      - name: '-------------------------------------------------------------------------------------------------------'
+        run: echo ""
+
+      - name: When uploading an asset to a release that exists
+        uses: ./
+        if: always()
+        id: upload
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          upload-url: ${{ steps.release.outputs.asset-upload-url }}
+          asset-path: './test/files/test-asset.txt'
+          asset-name: ${{ env.ASSET_NAME }}
+          asset-content-type: 'application/text'
+
+      - name: Then the outcome should be success
+        if: always()
+        run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.upload.outcome }}"
+
+      - name: And the asset should exist
+        if: always()
+        id: actual
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const assertAssetExists = require('./test/assert-asset-exists.js');
+            const releaseId = '${{ steps.release.outputs.release-id }}';
+            const assetName = '${{ env.ASSET_NAME }}';
+            const actualRelease = await assertAssetExists(github, core, releaseId, assetName);
+
+      - name: And the asset download url should match the action output
+        if: always()
+        run: ./test/assert-values-match.sh --name "asset download url" --expected "${{ steps.upload.outputs.asset-browser-download-url }}" --actual "${{ steps.actual.outputs.ACTUAL_BROWSER_DOWNLOAD_URL }}"
+
+      #----------------------------------------
+      # UPLOAD TO A RELEASE THAT DOES NOT EXIST
+      #----------------------------------------
+      - name: '-------------------------------------------------------------------------------------------------------'
+        run: echo ""
+
+      - name: When uploading an asset to a release that does not exist
+        uses: ./
+        if: always()
+        id: non-existent
+        continue-on-error: true # This is needed because we expect the step to fail.  We need it to "pass" in order for the test job to succeed.
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          upload-url: 'https://uploads.github.com/repos/im-open/upload-release-asset/releases/999999999/assets{?name,label}'
+          asset-path: './test/files/test-asset.txt'
+          asset-name: ${{ env.ASSET_NAME }}
+          asset-content-type: 'application/text'
+
+      - name: Then the outcome should be failure
+        if: always()
+        run: ./test/assert-values-match.sh --name "step outcome" --expected "failure" --actual "${{ steps.non-existent.outcome }}"
+
+      - name: And the action output should be undefined
+        if: always()
+        run: ./test/assert-values-match.sh --name "asset download url" --expected "" --actual "${{ steps.non-existent.outputs.asset-browser-download-url }}"
+
+      #--------------------------------------
+      # TEARDOWN
+      #--------------------------------------
+      - name: '-------------------------------------------------------------------------------------------------------'
+        run: echo ""
+
+      - name: Teardown - Cleanup all the releases by deleting them
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Not all of these will end up with a tag and a release, but run them all just in case any of the tests 
+            // fail unexpectedly.  We don't want a bunch of test releases and tags cluttering up the real thing.
+
+            const deleteReleaseFromGitHub = require('./test/teardown/delete-release-from-github.js')
+            await deleteReleaseFromGitHub(github, core, '${{ steps.release.outputs.release-id }}');
+
+            const deleteTagFromGitHub = require('./test/teardown/delete-tag-from-github.js')
+            await deleteTagFromGitHub(github, core, '${{ env.UPLOAD_TAG }}');
+
+      - name: '-------------------------------------------------------------------------------------------------------'
+        run: echo ""
