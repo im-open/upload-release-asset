@@ -84,7 +84,7 @@ jobs:
         run: echo ""
 
       - name: Setup - Checkout the action
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup - Dynamically generate tags for each of the scenarios to use with their release
         run: |
@@ -123,7 +123,7 @@ jobs:
       - name: And the asset should exist
         if: always()
         id: actual
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertAssetExists = require('./test/assert-asset-exists.js');
@@ -169,10 +169,10 @@ jobs:
 
       - name: Teardown - Cleanup all the releases by deleting them
         if: always()
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
-            // Not all of these will end up with a tag and a release, but run them all just in case any of the tests 
+            // Not all of these will end up with a tag and a release, but run them all just in case any of the tests
             // fail unexpectedly.  We don't want a bunch of test releases and tags cluttering up the real thing.
 
             const deleteReleaseFromGitHub = require('./test/teardown/delete-release-from-github.js')
