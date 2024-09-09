@@ -92,7 +92,7 @@ jobs:
           echo "UPLOAD_TAG=uploadTest_$tag" >> $GITHUB_ENV
 
       - name: Setup - Create a release
-        uses: im-open/create-release@v3
+        uses: im-open/create-release@v3.1.4
         id: release
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
