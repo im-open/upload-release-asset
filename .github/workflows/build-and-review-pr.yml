@@ -98,9 +98,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           tag-name: ${{ env.UPLOAD_TAG }}
           commitish: ${{ env.COMMITISH }}
-          asset-path: './test/files/test-asset.txt'
-          asset-name: ${{ env.ASSET_NAME }}
-          asset-content-type: 'application/text'
 
       #--------------------------------------
       # UPLOAD TO EXISTING RELEASE
