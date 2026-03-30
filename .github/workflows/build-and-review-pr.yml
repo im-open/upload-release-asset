@@ -21,6 +21,10 @@ on:
   #   without disabling that requirement.  If we have a status check that is always produced,
   #   we can also use that to require all branches be up to date before they are merged.
 
+permissions:
+  contents: write
+  pull-requests: write
+  
 jobs:
   build-and-review-pr:
     # This reusable workflow will check to see if an action's source code has changed based on
